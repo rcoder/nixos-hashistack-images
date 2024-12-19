@@ -32,3 +32,4 @@
         home = "/home/josh.linux";
     }; # Settings need to be specified here too so folders aren't overwritten/wiped
 }
+
