@@ -1,7 +1,7 @@
 arch: "aarch64"
 
 images:
-  - location: "./imgs/nixos-aarch64.img"
+  - location: "./result/nixos.img"
     arch: "aarch64"
   - location: "./imgs/nixos-x86.img"
     arch: "x86_64"
