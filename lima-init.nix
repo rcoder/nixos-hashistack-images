@@ -14,7 +14,8 @@ let
         exit 2
     fi
     # ripped from https://github.com/lima-vm/alpine-lima/blob/main/lima-init.sh
-    . "${LIMA_CIDATA_MNT}"/lima.env
+    # We can't just source lima.env because values might have spaces in them
+    while read -r line; do export "$line"; done <"${LIMA_CIDATA_MNT}"/lima.env
 
     export PATH=${pkgs.lib.makeBinPath [ pkgs.shadow pkgs.gawk pkgs.mount ]}:$PATH
 
