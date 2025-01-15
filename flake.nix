@@ -36,7 +36,7 @@
         };
 
         nixosModules.lima = {
-          imports = [ ./lima.nix ];
+          imports = [ ./lima-init.nix ];
         };
       };
 }
