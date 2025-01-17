@@ -56,6 +56,18 @@ limactl shell nixos
 # Using a VM shell, cd to this repository directory
 nixos-rebuild switch --flake .#nixos --use-remote-sudo
 ```
+  
+## Managing your NiXOS Liam VM instance
+
+See the [NixOS Lima VM Config Sample](https://github.com/msgilligan/nixos-lima-config-sample).
+
+Fork and clone that repository, check it out either to your macOS host or to a directory within you NixOS VM instance. Then use:
+
+```bash
+nixos-rebuild switch --flake .#sample --use-remote-sudo
+```
+
+Or change the name `sample` to match the hostname of your NixOS Lima guest.
 
 ## Credits
 
