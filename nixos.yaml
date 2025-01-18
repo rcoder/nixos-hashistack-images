@@ -21,6 +21,10 @@ mounts:
 
 mountType: "9p"
 
+ssh:
+  # This allows access to GitHub, etc.
+  forwardAgent: true
+
 containerd:
   system: false
   user: false
