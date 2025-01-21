@@ -25,5 +25,5 @@ jobs:
       - name: Upload image as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: nixos-lima-unstable-aarch6
+          name: nixos-lima-unstable-aarch64
           path: nixos-lima-unstable-aarch64.img
