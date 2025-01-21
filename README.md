@@ -57,7 +57,7 @@ limactl shell nixos
 nixos-rebuild switch --flake .#nixos --use-remote-sudo
 ```
   
-## Managing your NiXOS Liam VM instance
+## Managing your NiXOS Lima VM instance
 
 See the [NixOS Lima VM Config Sample](https://github.com/msgilligan/nixos-lima-config-sample).
 
