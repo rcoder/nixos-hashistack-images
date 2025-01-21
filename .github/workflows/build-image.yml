@@ -4,7 +4,11 @@ on: [push, pull_request]
 
 jobs:
   build:
-    runs-on: ubuntu-24.04-arm
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-24.04-arm]
+      fail-fast: false
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -17,7 +21,7 @@ jobs:
             system-features = kvm aarch64-linux
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build images
+      - name: Build Image
         run: |
           nix build .#packages.aarch64-linux.img
           cp result/nixos.img nixos-lima-unstable-aarch64.img
