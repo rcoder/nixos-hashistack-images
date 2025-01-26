@@ -46,6 +46,7 @@ let
     cp "$LIMA_CIDATA_SSHDIR"/authorized_keys "$LIMA_SSH_KEYS_CONF/$LIMA_CIDATA_USER"
 
     # Add mounts to /etc/fstab
+    echo "Adding mounts to /etc/fstab"
     sed -i '/#LIMA-START/,/#LIMA-END/d' /etc/fstab
     echo "#LIMA-START" >> /etc/fstab
     awk -f- "${LIMA_CIDATA_MNT}"/user-data <<'EOF' >> /etc/fstab
@@ -67,6 +68,38 @@ let
     }
 EOF
     echo "#LIMA-END" >> /etc/fstab
+
+    # Run system provisioning scripts
+    echo "Running system provisioning scripts"
+    if [ -d "${LIMA_CIDATA_MNT}"/provision.system ]; then
+    	for f in "${LIMA_CIDATA_MNT}"/provision.system/*; do
+    		echo "Executing $f"
+    		if ! "$f"; then
+    			echo "Failed to execute $f"
+    		fi
+    	done
+    fi
+
+    # Run user provisioning scripts
+    echo "Running user provisioning scripts"
+    USER_SCRIPT="$LIMA_CIDATA_HOME/.lima-user-script"
+    if [ -d "${LIMA_CIDATA_MNT}"/provision.user ]; then
+        if [ ! -f /sbin/openrc-run ]; then
+            until [ -e "/run/user/$LIMA_CIDATA_UID/systemd/private" ]; do sleep 3; done
+        fi
+        params=$(grep -o '^PARAM_[^=]*' "${LIMA_CIDATA_MNT}"/param.env | paste -sd ,)
+        for f in "${LIMA_CIDATA_MNT}"/provision.user/*; do
+            echo "Executing $f (as user $LIMA_CIDATA_USER)"
+            cp "$f" "$USER_SCRIPT"
+            chown "$LIMA_CIDATA_USER" "$USER_SCRIPT"
+            chmod 755 "$USER_SCRIPT"
+            if ! /run/wrappers/bin/sudo -iu "$LIMA_CIDATA_USER" "--preserve-env=$params" "XDG_RUNTIME_DIR=/run/user/$LIMA_CIDATA_UID" "$USER_SCRIPT"; then
+                echo "Failed to execute $f (as user $LIMA_CIDATA_USER)"
+            fi
+            rm "$USER_SCRIPT"
+        done
+    fi
+
 
     systemctl daemon-reload
     systemctl restart local-fs.target
