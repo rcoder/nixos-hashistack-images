@@ -2,7 +2,7 @@
 
 A NixOS flake for building a [Lima](https://lima-vm.io)-compatible system image.
 
-This is a fork of [kasuboski/nixos-lima](https://github.com/kasuboski/nixos-lima) and there are about a half-dozen [forks](https://github.com/kasuboski/nixos-lima/forks) of that repo, but none of them (yet) seem to be making much of an effort to be generic/reusable, accept contributions, create documentation, etc. So I created this repo to try to create something that multiple developers can use and contribute to. (So now there are a _half-dozen plus one_ projects 🤣  -- see [xkcd "Standards"](https://xkcd.com/927/))
+This is a based on [kasuboski/nixos-lima](https://github.com/kasuboski/nixos-lima) and there are about a half-dozen [forks](https://github.com/kasuboski/nixos-lima/forks) of that repo, but none of them (yet) seem to be making much of an effort to be generic/reusable, accept contributions, create documentation, etc. So I created this repo to try to create something that multiple developers can use and contribute to. (So now there are a _half-dozen plus one_ projects 🤣  -- see [xkcd "Standards"](https://xkcd.com/927/))
 
 There has been ongoing discussion in https://github.com/lima-vm/lima/discussions/430, and I have proposed there to create a "unified" project. If you have input or want to collaborate, please comment there or open an issue or pull request here. I'm also happy to archive this project and contribute to another one if other collaborators think that is a better path forward.
 
@@ -59,7 +59,7 @@ nixos-rebuild switch --flake .#nixos --use-remote-sudo
   
 ## Managing your NiXOS Lima VM instance
 
-See the [NixOS Lima VM Config Sample](https://github.com/msgilligan/nixos-lima-config-sample).
+See the [NixOS Lima VM Config Sample](https://github.com/nixos-lima/nixos-lima-config-sample).
 
 Fork and clone that repository, check it out either to your macOS host or to a directory within you NixOS VM instance. Then use:
 
@@ -68,6 +68,10 @@ nixos-rebuild switch --flake .#sample --use-remote-sudo
 ```
 
 Or change the name `sample` to match the hostname of your NixOS Lima guest.
+
+## References
+
+* [NixOS Dev Environment on Mac](https://www.joshkasuboski.com/posts/nix-dev-environment/) January, 24 2023 by [Josh Kasuboski](https://www.joshkasuboski.com)
 
 ## Credits
 
