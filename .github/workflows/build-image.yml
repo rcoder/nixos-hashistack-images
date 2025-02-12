@@ -21,13 +21,24 @@ jobs:
             system-features = kvm aarch64-linux
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build Image
+      - name: Build aarch64 Image
         run: |
           nix build .#packages.aarch64-linux.img
           cp result/nixos.qcow2 nixos-lima-unstable-aarch64.qcow2
 
-      - name: Upload image as artifact
+      - name: Build x86_64 Image
+        run: |
+          nix build .#packages.x86_64-linux.img
+          cp result/nixos.qcow2 nixos-lima-unstable-x86_64.qcow2
+
+      - name: Upload aarch64 image as artifact
         uses: actions/upload-artifact@v4
         with:
           name: nixos-lima-unstable-aarch64
           path: nixos-lima-unstable-aarch64.qcow2
+
+      - name: Upload x86_64 image as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nixos-lima-unstable-x86_64
+          path: nixos-lima-unstable-x86_64.qcow2
