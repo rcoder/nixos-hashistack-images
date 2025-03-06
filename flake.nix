@@ -10,28 +10,32 @@
   outputs = { self, nixpkgs, flake-utils, nixos-generators, ... }@attrs: 
     let
       ful = flake-utils.lib;
-      pkgs-for = system: import nixpkgs {
-        inherit system;
-        config.allowUnfree = true;
-      };
-      
-      devShells = ful.eachDefaultSystem (system: {
-        devShells.default = with (pkgs-for system); mkShell {
-          packages = [
-            just
-            lima
-            nomad
-            vault-bin
-          ];
-        };
-      });
-    in
-    ful.eachSystem [ ful.system.x86_64-linux ful.system.aarch64-linux ] (system:
+      devShells = ful.eachDefaultSystem (system:
+        let
+          pkgs = import nixpkgs {
+            inherit system;
+            config.allowUnfree = true;
+          };
+        in {
+          devShells.default = with pkgs; mkShell {
+            packages = [
+              git
+              just
+              lima
+              nomad
+              vault-bin
+            ];
+          };
+        });
+      eachLinuxSystem = cb: ful.eachSystem [ ful.system.x86_64-linux ful.system.aarch64-linux ] cb;
+    in eachLinuxSystem (system:
       {
         packages = {
           img = nixos-generators.nixosGenerate {
-            pkgs = pkgs-for system;
+            inherit system;
+
             modules = [
+              { nixpkgs.config.allowUnfree = true; }
               ./lima.nix
               ./modules/nomad.nix
             ];
