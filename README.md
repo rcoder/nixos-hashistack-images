@@ -1,52 +1,40 @@
-# Run NixOS on a Lima VM
+# Build NixOS images for local development and cloud deployment
 
-A NixOS flake for building a [Lima](https://lima-vm.io)-compatible system image.
+A NixOS flake for building a [Lima](https://lima-vm.io)-compatible system image which includes HashiCorp [Nomad](https://nomadproject.io) and [Vault](https://vaultproject.io).
 
-This is a based on [kasuboski/nixos-lima](https://github.com/kasuboski/nixos-lima) and there are about a half-dozen [forks](https://github.com/kasuboski/nixos-lima/forks) of that repo, but none of them (yet) seem to be making much of an effort to be generic/reusable, accept contributions, create documentation, etc. So I created this repo to try to create something that multiple developers can use and contribute to. (So now there are a _half-dozen plus one_ projects 🤣  -- see [xkcd "Standards"](https://xkcd.com/927/))
+This is a fork of a [fork](nixos-lima/nixos-lima) (and so on) tailored to include Nomad, Vault, and other default runtime support needed for a specific set of projects.
 
-There has been ongoing discussion in https://github.com/lima-vm/lima/discussions/430, and I have proposed there to create a "unified" project. If you have input or want to collaborate, please comment there or open an issue or pull request here. I'm also happy to archive this project and contribute to another one if other collaborators think that is a better path forward.
+## Usage
 
-Currently, this flake supports building and booting a Lima NixOS image on both Linux and macOS and rebuilding NixOS from inside the VM. (I have not tested on x86, but it should work with minor tweaks.) Several of the existing forks contain features I would like to see integrated.
+### Bootstrapping
 
-## Design Goals
+First, install Nix using the [Determinate Nix Installer](https://docs.determinate.systems/getting-started/individuals/); another Nix distrubtion like [Lix](https://lix.systems/install/) could also work if Determinate fails on your machine. (Note: if you already have Nix installed you should be able to reuse it as long as it [supports Flakes](https://nixos.wiki/wiki/flakes).)
 
-The following are the design goals that I think are important, but I'm definitely open to suggestions for changing these. (Just open an issue.)
+For normal development on a Mac targeting Linux images, you can use the [linux-builder](https://nixos.org/manual/nixpkgs/unstable/#sec-darwin-builder) utility from [Nix Darwin](https://github.com/LnL7/nix-darwin):
 
-1. Nix flake that can build a bootable NixOS Lima-compatible image
-2. Be as generic and reusable by others as possible
-3. Nix modules for the systemd services that initialize and configure the system
-4. User customization of NixOS Lima instance is done separately from initial image creation
-5. Track the current nixos-unstable branch in Nix
+```bash
+nix run nixpkgs#darwin.linux-builder
+```
 
-## Prerequisites
+This will bring up a minimal NixOS VM capable of building Nix packages for Linux. This VM is functionally equivalent to the hidden VM that Docker and Podman use on macOS, and the `linux-builder` utility is explicitly _not_ designed to serve as a base VM for more general-purpose use.
 
-A working Nix installation capable of building Linux systems. This includes:
-
-* Linux system with Nix installed
-* Linux VM with Nix installed (e.g. under macOS)
-* macOS system with [linux-builder](https://nixos.org/manual/nixpkgs/unstable/#sec-darwin-builder) installed via [Nix Darwin](https://github.com/LnL7/nix-darwin)
-
-Flakes must be enabled.
-
-
-## Generating the image
+In a separate terminal window, you can then build the disk image needed to run the VM under lima:
 
 ```bash
 nix build .#packages.aarch64-linux.img
 ```
 
-If you built the image on another system:
-
-```bash
-mkdir result
-# copy image to result/nixos.img
-```
+This will put a raw disk image for the guest VM in the standard Nix `result/` directory.
 
 ## Running NixOS
 
 ```bash
 limactl start --name=nixos nixos.yaml
+```
 
+You should be able to access Nomad, Vault, et. al. directly from the host system, but if you need to troubleshoot or work directly inside the VM you can get a shell via `limactl`:
+
+```
 limactl shell nixos
 ```
 
@@ -56,18 +44,10 @@ limactl shell nixos
 # Using a VM shell, cd to this repository directory
 nixos-rebuild switch --flake .#nixos --use-remote-sudo
 ```
-  
-## Managing your NiXOS Lima VM instance
 
-See the [NixOS Lima VM Config Sample](https://github.com/nixos-lima/nixos-lima-config-sample).
+## Accessing Nomad in Lima instance
 
-Fork and clone that repository, check it out either to your macOS host or to a directory within you NixOS VM instance. Then use:
-
-```bash
-nixos-rebuild switch --flake .#sample --use-remote-sudo
-```
-
-Or change the name `sample` to match the hostname of your NixOS Lima guest.
+The Nomad admin UI should be available [locally](http://localhost:4646), and the `nomad` CLI should work either from your Mac or the NixOS itself. There are example jobs in the [nomad](nomad/) directory you can use to test your install.
 
 ## References
 
@@ -75,12 +55,10 @@ Or change the name `sample` to match the hostname of your NixOS Lima guest.
 
 ## Credits
 
-* Forked from: [kasuboski/nixos-lima](https://github.com/kasuboski/nixos-lima)
-* Heavily inspired by: [patryk4815/ctftools](https://github.com/patryk4815/ctftools/tree/master/lima-vm)
+* Forked from: [nixos-lima/nixos-lima](https://github.com/nixos-lima/nixos-lima)
 
-The unmodified, upstream README is in `README_upstream.md`.
+## TODO
 
-Fixes/patches from:
-
-* [unidevel/nixos-lima](https://github.com/unidevel/nixos-lima)
-* [lima-vm/alpine-lima](https://github.com/lima-vm/alpine-lima)
+- [ ] (re-)separate reusable lima + image-build modules from runtime image dependencies
+- [ ] standard Nomad jobs for e.g. ZeroTierOne, Grafana, and Postgres (+ backups)
+- [ ] test + verify x86 support

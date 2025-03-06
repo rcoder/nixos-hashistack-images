@@ -18,6 +18,8 @@
         sudo.wheelNeedsPassword = false;
     };
 
+    nixpkgs.config.allowUnfree = true;
+
     # system mounts
     boot.loader.grub = {
         device = "nodev";
@@ -43,6 +45,11 @@
         vim
         git
     ];
+
+    programs.direnv = {
+        enable = true;
+        enableBashIntegration = true;
+    };
 
     system.stateVersion = "25.05";
 }

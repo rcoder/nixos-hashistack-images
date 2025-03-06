@@ -1,3 +1,4 @@
 imgs/
+keys/
 result
-.idea/
+*.qcow2
