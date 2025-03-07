@@ -2,7 +2,7 @@ stage0:
     nix run nixpkgs#darwin.linux-builder
 
 stage1:
-    nix run nix-darwin#nixos-rebuild -- switch --flake .#localdev
+    nix run nix-darwin#darwin-rebuild -- switch --flake .#localdev
 
 build:
     nix build .#packages.aarch64-linux.img
