@@ -37,7 +37,7 @@
             ];
 
             shellHook = ''
-              exec ${pkgs.zsh}/bin/zsh -c "just -l; zsh -i"
+              exec ${pkgs.zsh}/bin/zsh -c "just help; zsh -i"
             '';
           };
 

@@ -1,3 +1,9 @@
+@help:
+    echo
+    echo "Entering Nix development shell. Use 'just <task>' with any of the arguments below:"
+    echo
+    just -l
+
 stage0:
     nix run nixpkgs#darwin.linux-builder
 
