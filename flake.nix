@@ -25,16 +25,19 @@
         in {
           devShells.default = with pkgs; mkShell {
             packages = [
+              cacert
+              curl
               git
               just
               lima
               nomad
               vault-bin
               direnv
+              qemu-utils
             ];
 
             shellHook = ''
-              exec ${pkgs.zsh}/bin/zsh -i
+              exec ${pkgs.zsh}/bin/zsh -c "just -l; zsh -i"
             '';
           };
 
