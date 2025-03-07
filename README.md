@@ -10,10 +10,13 @@ This is a fork of a [fork](nixos-lima/nixos-lima) (and so on) tailored to includ
 
 First, install Nix using the [Determinate Nix Installer](https://docs.determinate.systems/getting-started/individuals/); another Nix distrubtion like [Lix](https://lix.systems/install/) could also work if Determinate fails on your machine. (Note: if you already have Nix installed you should be able to reuse it as long as it [supports Flakes](https://nixos.wiki/wiki/flakes).)
 
+To build and interact with this VM image, you'll want to use the Nix dev shell, which you can launch by running `nix develop`. All of the commands below (except for the initial `stage0` bootstrapping target) assume you've already started a dev shell.
+
 For normal development on a Mac targeting Linux images, you can use the [linux-builder](https://nixos.org/manual/nixpkgs/unstable/#sec-darwin-builder) utility from [Nix Darwin](https://github.com/LnL7/nix-darwin):
 
 ```bash
-nix run nixpkgs#darwin.linux-builder
+nix develop
+just stage0
 ```
 
 This will bring up a minimal NixOS VM capable of building Nix packages for Linux. This VM is functionally equivalent to the hidden VM that Docker and Podman use on macOS, and the `linux-builder` utility is explicitly _not_ designed to serve as a base VM for more general-purpose use.
@@ -21,13 +24,13 @@ This will bring up a minimal NixOS VM capable of building Nix packages for Linux
 You can configure this helper to run in the background persistently, as well as configure your global Nix configuration to automatically use it by adding it to your system configuration via nix-darwin:
 
 ```bash
-darwin-rebuild switch --flake .#localdev
+just stage1
 ```
 
 Once the builder is running via either method, you can build the disk image needed to run the NixOS VM under lima:
 
 ```bash
-nix build .#packages.aarch64-linux.img
+just build
 ```
 
 This will put a raw disk image for the guest VM in the standard Nix `result/` directory.
@@ -35,13 +38,13 @@ This will put a raw disk image for the guest VM in the standard Nix `result/` di
 ## Running NixOS
 
 ```bash
-limactl start --name=nixos nixos.yaml
+just create-vm
 ```
 
 You should be able to access Nomad, Vault, et. al. directly from the host system, but if you need to troubleshoot or work directly inside the VM you can get a shell via `limactl`:
 
-```
-limactl shell nixos
+```bash
+just run-vm
 ```
 
 ## Rebuilding NixOS inside the Lima instance

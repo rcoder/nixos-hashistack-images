@@ -30,8 +30,14 @@
               lima
               nomad
               vault-bin
+              direnv
             ];
+
+            shellHook = ''
+              exec ${pkgs.zsh}/bin/zsh -i
+            '';
           };
+
         });
       eachLinuxSystem = cb: ful.eachSystem [ ful.system.x86_64-linux ful.system.aarch64-linux ] cb;
     in eachLinuxSystem (system:
