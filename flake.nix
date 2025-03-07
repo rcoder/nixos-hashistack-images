@@ -2,12 +2,18 @@
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
+
     nixos-generators = {
       url = "github:nix-community/nixos-generators";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    nix-darwin = {
+      url = "github:LnL7/nix-darwin/master";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
-  outputs = { self, nixpkgs, flake-utils, nixos-generators, ... }@attrs: 
+  outputs = { self, nixpkgs, flake-utils, nixos-generators, nix-darwin, ... }@attrs: 
     let
       ful = flake-utils.lib;
       devShells = ful.eachDefaultSystem (system:
@@ -50,6 +56,11 @@
             ./lima.nix
             ./modules/nomad.nix
           ];
+        };
+
+        darwinConfigurations.localdev = nix-darwin.lib.darwinSystem {
+          system = "aarch64-darwin";
+          modules = [ ./modules/darwin.nix ];
         };
 
         nixosModules.lima = {

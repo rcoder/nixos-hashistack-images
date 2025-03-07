@@ -18,7 +18,13 @@ nix run nixpkgs#darwin.linux-builder
 
 This will bring up a minimal NixOS VM capable of building Nix packages for Linux. This VM is functionally equivalent to the hidden VM that Docker and Podman use on macOS, and the `linux-builder` utility is explicitly _not_ designed to serve as a base VM for more general-purpose use.
 
-In a separate terminal window, you can then build the disk image needed to run the VM under lima:
+You can configure this helper to run in the background persistently, as well as configure your global Nix configuration to automatically use it by adding it to your system configuration via nix-darwin:
+
+```bash
+darwin-rebuild switch --flake .#localdev
+```
+
+Once the builder is running via either method, you can build the disk image needed to run the NixOS VM under lima:
 
 ```bash
 nix build .#packages.aarch64-linux.img
